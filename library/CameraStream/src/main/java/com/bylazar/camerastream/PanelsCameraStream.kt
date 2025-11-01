@@ -4,7 +4,7 @@ import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource
 
 
 object PanelsCameraStream {
-    fun startStream(source: CameraStreamSource, maxFps: Int) {
+    fun startStream(source: CameraStreamSource, maxFps: Int? = null) {
         Plugin.startStream(source, maxFps)
     }
 

@@ -28,6 +28,8 @@ import kotlin.coroutines.resume
 open class CameraStreamPluginConfig : BasePluginConfig() {
     var imageQuality = 50
     var defaultFPS = 15
+
+    var clearImageOnStop = false
 }
 
 object Plugin : Plugin<CameraStreamPluginConfig>(CameraStreamPluginConfig()) {
@@ -39,8 +41,10 @@ object Plugin : Plugin<CameraStreamPluginConfig>(CameraStreamPluginConfig()) {
     override fun onNewClient(client: Socket.ClientSocket) {
     }
 
-    fun startStream(source: CameraStreamSource, maxFps: Int = config.defaultFPS) {
+    fun startStream(source: CameraStreamSource, maxFps: Int?) {
         stopStream()
+
+        val fps = maxFps ?: config.defaultFPS
 
         streamJob = scope.launch {
             while (isActive) {
@@ -59,11 +63,11 @@ object Plugin : Plugin<CameraStreamPluginConfig>(CameraStreamPluginConfig()) {
                             bitmapToJpegString(bitmap, config.imageQuality)
                         }
 
-                        send("CAM_STREAM", jpegString)
+                        send("camStream", jpegString)
                     }
 
-                    if (maxFps > 0) {
-                        val frameTimeMs = (1000.0 / maxFps).toLong()
+                    if (fps > 0) {
+                        val frameTimeMs = (1000.0 / fps).toLong()
                         val elapsedTime = System.currentTimeMillis() - currentTimestamp
                         val sleepTime = maxOf(0L, frameTimeMs - elapsedTime)
                         delay(sleepTime)
@@ -84,6 +88,9 @@ object Plugin : Plugin<CameraStreamPluginConfig>(CameraStreamPluginConfig()) {
     fun stopStream() {
         streamJob?.cancel()
         streamJob = null
+        if(config.clearImageOnStop){
+            send("camStream", "")
+        }
     }
 
     private suspend fun CameraStreamSource.awaitFrame(): Bitmap? = suspendCancellableCoroutine { continuation ->

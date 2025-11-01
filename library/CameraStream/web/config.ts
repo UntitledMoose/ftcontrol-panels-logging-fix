@@ -14,9 +14,9 @@ export const config: PluginConfig = {
   manager: "src/manager.ts",
   components: [
     {
-      type: "navlet",
-      id: "Battery",
-      filepath: "src/navlets/Battery.svelte",
+      type: "widget",
+      id: "CameraStream",
+      filepath: "src/navlets/CameraStream.svelte",
     },
     {
       type: "docs",
