@@ -1,6 +1,9 @@
 package com.bylazar.panels
 
+import android.util.Log
+
 object Logger {
+    private const val TAG = "PANELS"
     const val REFLECTION_PREFIX = "Reflection"
     const val SOCKET_PREFIX = "Socket"
     const val SERVER_PREFIX = "Server"
@@ -19,12 +22,12 @@ object Logger {
 
     fun log(prefix: String, message: String) {
         if(!Panels.config.enableLogs) return
-        println("PANELS: ${prefix.uppercase()}: (${getCallerClassName()}): $message")
+        Log.d(TAG, "${prefix.uppercase()}: (${getCallerClassName()}): $message")
     }
 
     fun error(prefix: String, message: String) {
         if(!Panels.config.enableLogs) return
-        println("PANELS: ${prefix.uppercase()}: (${getCallerClassName()}): ERROR: $message")
+        Log.e(TAG, "${prefix.uppercase()}: (${getCallerClassName()}): $message")
     }
 
     fun reflectionLog(message: String) = log(REFLECTION_PREFIX, message)
